@@ -1,30 +1,43 @@
 from contextlib import asynccontextmanager
-from typing import Dict, AsyncGenerator, Any
+from typing import Any, AsyncGenerator, Dict
 
-from fastapi import FastAPI, status, Request, Response
+from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from fastapi_pagination import add_pagination
-
 from sqlalchemy.orm import Session
-from apps.sprocket.routes import router as genai_router
+
+from apps.sprocket.routes import router as sprocket_router
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncGenerator[Any, Any]:
-    # await database.init_db()
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    title="POWERFLEX API",
+    description="This is an API for POWERFLEX Technical Test",
+    summary="Build a RESTful api that services requests for sprocket factory data and sprockets.",
+    version="1.0",
+    terms_of_service="https://www.powerflex.com/terms-and-conditions",
+    contact={
+        "name": "Jaishir Bayuelo",
+        "url": "https://www.linkedin.com/in/jaisir-bayuelo-85a0b6160/",
+        "email": "jaisirenterprise@gmail.com",
+    },
+    license_info={
+        "name": "Apache 2.0",
+        "identifier": "Apache 2.0",
+    },
+)
 
 
-app.include_router(genai_router)
-add_pagination(app)
+app.include_router(router=sprocket_router)
 
 
 @app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
+async def db_session_middleware(request: Request, call_next: Any) -> Response:
     response = Response("Internal server error", status_code=500)
     try:
         request.state.db = Session()

@@ -13,9 +13,6 @@ apply-migrations:
 up:
 	docker compose -f .devcontainer/docker-compose.yml up -d
 
-upgrade:
-	docker compose -f .devcontainer/docker-compose.yml exec api aerich upgrade
-
 load:
 	docker compose -f .devcontainer/docker-compose.yml exec api python3 load.py
 
