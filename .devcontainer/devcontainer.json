@@ -1,0 +1,87 @@
+{
+	"name": "shaddai",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"extensions.verifySignature": false,
+				"workbench.editor.restoreViewState": false,
+				"workbench.startupEditor": "none",
+				"window.restoreWindows": "one",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash",
+						"env": {
+							"PYTHONPATH": "${workspaceFolder}"
+						}
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.scrollback": 100000,
+				"editor.defaultFormatter": "ms-python.black-formatter",
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"source.organizeImports": true
+				},
+				"editor.bracketPairColorization.enabled": true,
+				"editor.guides.bracketPairs": true,
+				"python.pythonPath": "/usr/local/bin/python3",
+				"python.languageServer": "Pylance",
+				"python.analysis.logLevel": "Trace",
+				"python.analysis.memory.keepLibraryAst": true,
+				"python.analysis.memory.keepLibraryLocalVariables": true,
+				"python.analysis.diagnosticMode": "workspace",
+				"python.analysis.completeFunctionParens": true,
+				"python.analysis.indexing": true,
+				"python.analysis.exclude": [
+					"**/node_modules",
+					"**/__pycache__",
+					"**/.mypy_cache",
+					"dist",
+					".venv",
+					"htmlcov",
+					".vscode",
+					"**/*.drawio"
+				],
+				"python.testing.unittestEnabled": false,
+				"python.testing.nosetestsEnabled": false,
+				"python.testing.pytestEnabled": true,
+				"python.linting.mypyArgs": [],
+				"isort.args": [
+					"--profile",
+					"black",
+					"--src",
+					"${workspaceFolder}"
+				],
+				"indentRainbow.errorColor": "rgba(128,32,32,0.2)",
+				"hediet.vscode-drawio.theme": "min",
+				"terminal.integrated.fontSize": 13,
+				"autoDocstring.generateDocstringOnEnter": true,
+				"autoDocstring.quoteStyle": "\"\"\"",
+				"autoDocstring.docstringFormat": "google"
+			},
+			"extensions": [
+				"ms-python.python",
+				"ms-python.black-formatter@2023.4.1",
+				"ms-python.isort",
+				"ms-python.autopep8@2023.6.0",
+				"ms-python.mypy-type-checker",
+				"dchanco.vsc-invoke",
+				"formulahendry.code-runner",
+				"visualstudioexptteam.vscodeintellicode",
+				"lacroixdavid1.vscode-format-context-menu",
+				"oderwat.indent-rainbow",
+				"ms-azuretools.vscode-docker",
+				"mads-hartmann.bash-ide-vscode",
+				"rogalmic.bash-debug",
+				"timonwong.shellcheck",
+				"remisa.shellman",
+				"njpwerner.autodocstring"
+			]
+		}
+	}
+}
+

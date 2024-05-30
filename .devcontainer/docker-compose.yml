@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+
+  redis_service:
+    container_name: redis
+    image: redislabs/redismod
+    ports:
+      - "6379:6379"
+    networks:
+      - redis_network
+
+  api:
+    container_name: api
+    restart: always
+    volumes:
+      - ../:/apps
+    build:
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
+    ports:
+      - "8000:8000"
+    env_file: ../dev.env
+    depends_on:
+      - database
+      - redis_service
+    networks:
+      - redis_network
+
+  database:
+    image: postgres:16.1-alpine
+    container_name: database
+    env_file: ../dev.env
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    networks:
+      - redis_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    env_file: ../dev.env
+    ports:
+      - "5050:80"
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin/data
+    depends_on:
+      - database
+    networks:
+      - redis_network
+
+
+networks:
+  redis_network:
+
+volumes:
+  pgadmin_data:

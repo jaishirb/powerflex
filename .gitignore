@@ -1,0 +1,18 @@
+# Ignore development environment file
+dev.env
+
+# Ignore credentials file
+credentials.json
+
+# Ignore Python bytecode cache
+__pycache__/
+
+# Ignore postgressql data
+db_data/
+pgadmin_data/
+
+# Ignore IDE files
+.idea/
+.DS_Store
+.DS_Store
+celerybeat-chedule
