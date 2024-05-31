@@ -299,3 +299,37 @@ This devcontainer.json has a special setup for developing and guarantees high qu
    ```
 ### Coverage: 91%
 ![img_3.png](images/img_10.png)
+
+
+## Conclusion
+
+This project provides a comprehensive solution for managing factory data, sprocket production 
+details, and sprocket types using a Python-based FastAPI application. By leveraging modern tools 
+and technologies such as FastAPI, SQLModel, SQLAlchemy, and Docker, the solution offers a robust 
+and scalable platform for tracking and querying production metrics. The use of PostgreSQL for data 
+storage and Redis for caching enhances performance and data integrity. The project's structured approach 
+to database schema design, API endpoint implementation, and data ingestion ensures efficient management of 
+factory and sprocket data. The proposed AWS architecture diagram illustrates a scalable and secure solution for 
+hosting and managing containerized applications, providing high availability, performance, and monitoring capabilities. 
+Overall, the project demonstrates a practical and effective approach to solving the PowerFlex technical test challenge.
+
+## Next steps
+
+I would like to implement some features like:
+
+- Authentication and Authorization
+- More tests
+- Improve the coverage
+- Implement a CI/CD pipeline
+- Implement a monitoring system
+- Implement a logging system
+- Implement a rate limiting system
+- Implement a queue system
+- Apply workload testing
+- Apply stress testing
+- Deploy the application in a cloud provider with the architecture proposed
+
+
+# THANK YOU!
+
+From Colombia - Barranquilla with :heart: by [Jaishir Bayuelo](https://www.linkedin.com/in/jaisir-bayuelo-85a0b6160/)
