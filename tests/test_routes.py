@@ -18,11 +18,15 @@ def test_create_chart_data(client: TestClient, session: Session) -> None:
         ).id
     ]
     time = datetime(2024, 5, 30, 12, 0, 0)
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=20,
         time=time,
         sprocket_types=sprocket_types,
+        chart_data_id=chart_data.id,
     )
     sprocket_production = services.create_sprocket_production(
         session=session,
@@ -55,6 +59,9 @@ def test_get_chart_data(client: TestClient, session: Session) -> None:
             teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
         ),
     )
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=15,
@@ -62,6 +69,7 @@ def test_get_chart_data(client: TestClient, session: Session) -> None:
         sprocket_types=[
             sprocket_type.id,
         ],
+        chart_data_id=chart_data.id,
     )
     sprocket_production = services.create_sprocket_production(
         session=session, sprocket_production=sprocket_production_data
@@ -90,11 +98,15 @@ def test_create_factory(client: TestClient, session: Session) -> None:
         ).id
     ]
     time = datetime(2024, 5, 30, 12, 0, 0)
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=20,
         time=time,
         sprocket_types=sprocket_types,
+        chart_data_id=chart_data.id,
     )
     sprocket_production = services.create_sprocket_production(
         session=session,
@@ -132,11 +144,15 @@ def test_get_factory(client: TestClient, session: Session) -> None:
             ),
         ).id
     ]
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=15,
         time=datetime(2024, 5, 30, 12, 0, 0),
         sprocket_types=sprocket_types,
+        chart_data_id=chart_data.id,
     )
     sprocket_production = services.create_sprocket_production(
         session=session, sprocket_production=sprocket_production_data
@@ -251,15 +267,17 @@ def test_create_sprocket_production(client: TestClient, session: Session) -> Non
         ).id
         for i in range(1, 4)
     ]
-
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     timestamp = 1633194818
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=15,
         time=timestamp,
         sprocket_types=sprocket_types_data,
+        chart_data_id=chart_data.id,
     )
-
     response = client.post(
         url="/api/v1/sprocket_production",
         json=sprocket_production_data.model_dump(),
@@ -295,11 +313,15 @@ def test_get_sprocket_production(client: TestClient, session: Session) -> None:
             ),
         ).id
     ]
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=15,
         time=datetime(2024, 5, 30, 12, 0, 0),
         sprocket_types=sprocket_types,
+        chart_data_id=chart_data.id,
     )
     sprocket_production = services.create_sprocket_production(
         session, sprocket_production_data
@@ -322,6 +344,9 @@ def test_get_all_sprocket_production(client: TestClient, session: Session) -> No
             ),
         ).id
     ]
+    chart_data = services.create_chart_data(session=session, chart_data=schemas.ChartDataCreate(
+        sprocket_productions=[]
+    ))
     sprocket_production_data_list = [
         services.create_sprocket_production(
             session=session,
@@ -330,6 +355,7 @@ def test_get_all_sprocket_production(client: TestClient, session: Session) -> No
                 sprocket_production_goal=15 * i,
                 time=datetime(2024, 5, 30, 12, 0, 0),
                 sprocket_types=sprocket_types,
+                chart_data_id=chart_data.id,
             ),
         )
         for i in range(1, 4)

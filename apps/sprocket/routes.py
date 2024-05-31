@@ -33,7 +33,6 @@ def read_chart_data(
     return chart_data
 
 
-# Factory CRUD
 @router.post(path="/factories", response_model=schemas.FactoryResponse)
 def create_factory(
     factory: schemas.FactoryCreate,
@@ -51,9 +50,7 @@ def read_factory(factory_id: int, session: database.SessionDep) -> models.Factor
     return factory
 
 
-# SPRocketType CRUD
 @router.get(path="/sprockets", response_model=List[schemas.SPRocketTypeResponse])
-@cache(expire=60)
 def list_sprocket_type(
     session: database.SessionDep,
     page: int = Query(1, ge=1),
@@ -130,7 +127,6 @@ def read_sprocket_production(
     path="/sprocket_production/",
     response_model=List[schemas.SPRocketProductionResponse],
 )
-@cache(expire=60)
 def list_sprocket_production(
     session: database.SessionDep,
     page: int = Query(1, ge=1),

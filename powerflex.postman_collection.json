@@ -309,7 +309,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\"sprocket_production_actual\": 30,\n\"sprocket_production_goal\": 60,\n\"sprocket_types\": [\n    1\n],\n\"time\": 1633194818\n}",
+					"raw": "{\n    \"sprocket_production_actual\": 25,\n    \"sprocket_production_goal\": 65,\n    \"sprocket_types\": [\n        1\n    ],\n    \"time\": 1767194234,\n    \"chart_data_id\": 2\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -339,7 +339,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\"sprocket_production_actual\": 30,\n\"sprocket_production_goal\": 60,\n\"sprocket_types\": [\n    1\n],\n\"time\": 1633194818\n}",
+							"raw": "{\n    \"sprocket_production_actual\": 25,\n    \"sprocket_production_goal\": 65,\n    \"sprocket_types\": [\n        1\n    ],\n    \"time\": 1767194234,\n    \"chart_data_id\": 2\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -367,7 +367,7 @@
 					"header": [
 						{
 							"key": "date",
-							"value": "Fri, 31 May 2024 06:10:48 GMT"
+							"value": "Fri, 31 May 2024 06:46:33 GMT"
 						},
 						{
 							"key": "server",
@@ -375,7 +375,7 @@
 						},
 						{
 							"key": "content-length",
-							"value": "182"
+							"value": "201"
 						},
 						{
 							"key": "content-type",
@@ -383,7 +383,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"sprocket_production_actual\": 30,\n    \"sprocket_production_goal\": 60,\n    \"id\": 2,\n    \"sprocket_types\": [\n        {\n            \"teeth\": 5,\n            \"pitch_diameter\": 2.5,\n            \"outside_diameter\": 0.3,\n            \"pitch\": 2,\n            \"id\": 1\n        }\n    ],\n    \"time\": 1633194818\n}"
+					"body": "{\n    \"sprocket_production_actual\": 25,\n    \"sprocket_production_goal\": 65,\n    \"chart_data_id\": 2,\n    \"id\": 4,\n    \"sprocket_types\": [\n        {\n            \"teeth\": 10,\n            \"pitch_diameter\": 5,\n            \"outside_diameter\": 0.6,\n            \"pitch\": 4,\n            \"id\": 1\n        }\n    ],\n    \"time\": 1767194234\n}"
 				}
 			]
 		},

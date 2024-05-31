@@ -29,6 +29,7 @@ def create_sprocket_production(
         sprocket_production_goal=sprocket_production.sprocket_production_goal,
         time=sprocket_production.time,
         sprocket_types=sprocket_types,
+        chart_data_id=sprocket_production.chart_data_id,
     )
     session.add(session_sprocket_production)
     session.commit()

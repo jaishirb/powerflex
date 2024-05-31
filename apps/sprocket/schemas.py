@@ -24,6 +24,7 @@ class SPRocketTypeResponse(SPRocketTypeBase):
 class SPRocketProductionBase(BaseModel):
     sprocket_production_actual: int
     sprocket_production_goal: int
+    chart_data_id: int
 
 
 class SPRocketProductionCreate(SPRocketProductionBase):
