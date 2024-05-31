@@ -17,3 +17,4 @@ pgadmin_data/
 .DS_Store
 .vscode
 celerybeat-chedule
+.coverage

@@ -46,7 +46,12 @@ def get_all_sprocket_production(
     session: Session, page: int = 1, limit: int = 10
 ) -> ScalarResult[models.SPRocketProduction]:
     offset = (page - 1) * limit
-    stmt = select(models.SPRocketProduction).limit(limit).offset(offset)
+    stmt = (
+        select(models.SPRocketProduction)
+        .order_by(models.SPRocketProduction.created_at)
+        .limit(limit)
+        .offset(offset)
+    )
     result = session.exec(stmt)
     return result
 
@@ -97,7 +102,12 @@ def get_sprocket_types(
     session: Session, page: int = 1, limit: int = 10
 ) -> ScalarResult[models.SPRocketType]:
     offset = (page - 1) * limit
-    stmt = select(models.SPRocketType).limit(limit).offset(offset)
+    stmt = (
+        select(models.SPRocketType)
+        .order_by(models.SPRocketType.created_at)
+        .limit(limit)
+        .offset(offset)
+    )
     result = session.exec(stmt)
     return result
 

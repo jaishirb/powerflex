@@ -1,12 +1,26 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
+from sqlalchemy import event
 from sqlmodel import Field, Relationship, SQLModel
 
 metadata = SQLModel.metadata
 
 
-class SPRocketType(SQLModel, table=True):
+class BaseSQLModel(SQLModel):
+    created_at: datetime = Field(default=datetime.now())
+    updated_at: datetime = Field(default=datetime.now())
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        event.listen(cls, "before_update", cls.set_updated_at)
+
+    @staticmethod
+    def set_updated_at(mapper: Any, connection: Any, target: Any) -> None:
+        target.updated_at = datetime.now()
+
+
+class SPRocketType(BaseSQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     teeth: int
     pitch_diameter: float
@@ -23,7 +37,7 @@ class SPRocketType(SQLModel, table=True):
         return f"{self.id}"
 
 
-class SPRocketProduction(SQLModel, table=True):
+class SPRocketProduction(BaseSQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     sprocket_production_actual: int
     sprocket_production_goal: int
@@ -38,7 +52,7 @@ class SPRocketProduction(SQLModel, table=True):
         return f"{self.id}"
 
 
-class ChartData(SQLModel, table=True):
+class ChartData(BaseSQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     sprocket_productions: List[SPRocketProduction] = Relationship(
         back_populates="chart_data"
@@ -51,7 +65,7 @@ class ChartData(SQLModel, table=True):
         return f"{self.id}"
 
 
-class Factory(SQLModel, table=True):
+class Factory(BaseSQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     chart_data_id: Optional[int] = Field(default=None, foreign_key="chartdata.id")
     chart_data: Optional[ChartData] = Relationship(back_populates="factory")
@@ -60,7 +74,7 @@ class Factory(SQLModel, table=True):
         return f"{self.id}"
 
 
-class InitialDataLoad(SQLModel, table=True):
+class InitialDataLoad(BaseSQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     loaded: bool = False
 

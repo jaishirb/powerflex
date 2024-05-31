@@ -1,10 +1,11 @@
+import os
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Dict
 
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from fastapi_pagination import add_pagination
+from fastapi_redis_cache import FastApiRedisCache
 from sqlalchemy.orm import Session
 
 from apps.sprocket.routes import router as sprocket_router
@@ -12,6 +13,13 @@ from apps.sprocket.routes import router as sprocket_router
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncGenerator[Any, Any]:
+    redis_cache = FastApiRedisCache()
+    redis_cache.init(
+        host_url=os.environ.get("REDIS_URL"),
+        prefix="powerflex-cache",
+        response_header="X-PowerFlex-Cache",
+        ignore_arg_types=[Request, Response, Session],
+    )
     yield
 
 
@@ -33,9 +41,7 @@ app = FastAPI(
     },
 )
 
-
 app.include_router(router=sprocket_router)
-add_pagination(app)
 
 
 @app.middleware("http")
