@@ -92,7 +92,7 @@ The solution involves the following steps:
 
 
 ### Database diagram
-![img_1.png](images/img_8.png)
+![img.png](images/img_12.png)
 
 
 

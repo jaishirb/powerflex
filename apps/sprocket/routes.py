@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Sequence, Type
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi_redis_cache import cache
@@ -135,5 +135,8 @@ def read_all_sprocket_production(
     session: database.SessionDep,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
-) -> ScalarResult[models.SPRocketProduction]:
-    return services.get_all_sprocket_production(session=session, page=page, limit=limit)
+) -> Sequence[models.SPRocketProduction]:
+    response = services.get_all_sprocket_production(
+        session=session, page=page, limit=limit
+    )
+    return response

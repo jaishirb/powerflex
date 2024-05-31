@@ -8,56 +8,67 @@ from apps.sprocket import schemas, services
 
 
 @pytest.mark.unittest
-def test_create_chart_data(client: TestClient) -> None:
+def test_create_chart_data(client: TestClient, session: Session) -> None:
+    sprocket_types = [
+        services.create_sprocket_type(
+            session=session,
+            sprocket_type=schemas.SPRocketTypeCreate(
+                teeth=5, pitch_diameter=5.0, outside_diameter=6.0, pitch=1.0
+            ),
+        ).id
+    ]
+    time = datetime(2024, 5, 30, 12, 0, 0)
+    sprocket_production_data = schemas.SPRocketProductionCreate(
+        sprocket_production_actual=10,
+        sprocket_production_goal=20,
+        time=time,
+        sprocket_types=sprocket_types,
+    )
+    sprocket_production = services.create_sprocket_production(
+        session=session,
+        sprocket_production=sprocket_production_data,
+    )
     response = client.post(
         url="/api/v1/chart_data",
-        json={
-            "sprocket_productions": [
-                {
-                    "sprocket_production_actual": 10,
-                    "sprocket_production_goal": 20,
-                    "time": 1633194818,
-                    "sprocket_types": [
-                        {
-                            "teeth": 20,
-                            "pitch_diameter": 5.5,
-                            "outside_diameter": 6.0,
-                            "pitch": 2.5,
-                        }
-                    ],
-                }
-            ]
-        },
+        json={"sprocket_productions": [sprocket_production.id]},
     )
     assert response.status_code == 200
     data = response.json()
     assert "id" in data
     assert data["sprocket_productions"][0]["sprocket_production_actual"] == 10
     assert data["sprocket_productions"][0]["sprocket_production_goal"] == 20
-    assert data["sprocket_productions"][0]["time"] == 1633194818
+    assert data["sprocket_productions"][0]["time"] == int(time.timestamp())
     assert len(data["sprocket_productions"][0]["sprocket_types"]) == 1
-    assert data["sprocket_productions"][0]["sprocket_types"][0]["teeth"] == 20
-    assert data["sprocket_productions"][0]["sprocket_types"][0]["pitch_diameter"] == 5.5
+    assert data["sprocket_productions"][0]["sprocket_types"][0]["teeth"] == 5
+    assert data["sprocket_productions"][0]["sprocket_types"][0]["pitch_diameter"] == 5.0
     assert (
         data["sprocket_productions"][0]["sprocket_types"][0]["outside_diameter"] == 6.0
     )
-    assert data["sprocket_productions"][0]["sprocket_types"][0]["pitch"] == 2.5
+    assert data["sprocket_productions"][0]["sprocket_types"][0]["pitch"] == 1.0
 
 
 @pytest.mark.unittest
 def test_get_chart_data(client: TestClient, session: Session) -> None:
+    sprocket_type = services.create_sprocket_type(
+        session=session,
+        sprocket_type=schemas.SPRocketTypeCreate(
+            teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
+        ),
+    )
+    sprocket_production_data = schemas.SPRocketProductionCreate(
+        sprocket_production_actual=10,
+        sprocket_production_goal=15,
+        time=datetime(2024, 5, 30, 12, 0, 0),
+        sprocket_types=[
+            sprocket_type.id,
+        ],
+    )
+    sprocket_production = services.create_sprocket_production(
+        session=session, sprocket_production=sprocket_production_data
+    )
     chart_data = schemas.ChartDataCreate(
         sprocket_productions=[
-            schemas.SPRocketProductionCreate(
-                sprocket_production_actual=10,
-                sprocket_production_goal=15,
-                time=datetime(2024, 5, 30, 12, 0, 0),
-                sprocket_types=[
-                    schemas.SPRocketTypeCreate(
-                        teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
-                    )
-                ],
-            )
+            sprocket_production.id,
         ]
     )
     created_chart_data = services.create_chart_data(session, chart_data)
@@ -70,27 +81,34 @@ def test_get_chart_data(client: TestClient, session: Session) -> None:
 
 @pytest.mark.unittest
 def test_create_factory(client: TestClient, session: Session) -> None:
+    sprocket_types = [
+        services.create_sprocket_type(
+            session=session,
+            sprocket_type=schemas.SPRocketTypeCreate(
+                teeth=5, pitch_diameter=5.0, outside_diameter=6.0, pitch=1.0
+            ),
+        ).id
+    ]
+    time = datetime(2024, 5, 30, 12, 0, 0)
+    sprocket_production_data = schemas.SPRocketProductionCreate(
+        sprocket_production_actual=10,
+        sprocket_production_goal=20,
+        time=time,
+        sprocket_types=sprocket_types,
+    )
+    sprocket_production = services.create_sprocket_production(
+        session=session,
+        sprocket_production=sprocket_production_data,
+    )
+    chart_data = schemas.ChartDataCreate(
+        sprocket_productions=[
+            sprocket_production.id,
+        ]
+    )
+    created_chart_data = services.create_chart_data(session, chart_data)
     response = client.post(
         url="/api/v1/factories",
-        json={
-            "chart_data": {
-                "sprocket_productions": [
-                    {
-                        "sprocket_production_actual": 10,
-                        "sprocket_production_goal": 20,
-                        "time": "2024-05-30T12:00:00",
-                        "sprocket_types": [
-                            {
-                                "teeth": 20,
-                                "pitch_diameter": 5.5,
-                                "outside_diameter": 6.0,
-                                "pitch": 2.5,
-                            }
-                        ],
-                    }
-                ]
-            }
-        },
+        json={"chart_data": created_chart_data.id},
     )
     assert response.status_code == 200
     data = response.json()
@@ -106,26 +124,27 @@ def test_create_factory(client: TestClient, session: Session) -> None:
 
 @pytest.mark.unittest
 def test_get_factory(client: TestClient, session: Session) -> None:
-    factory_data = schemas.FactoryCreate(
-        chart_data=schemas.ChartDataCreate(
-            sprocket_productions=[
-                schemas.SPRocketProductionCreate(
-                    sprocket_production_actual=10,
-                    sprocket_production_goal=15,
-                    time=datetime(2024, 5, 30, 12, 0, 0),
-                    sprocket_types=[
-                        schemas.SPRocketTypeCreate(
-                            teeth=20,
-                            pitch_diameter=5.5,
-                            outside_diameter=6.0,
-                            pitch=2.5,
-                        )
-                    ],
-                )
-            ]
-        )
+    sprocket_types = [
+        services.create_sprocket_type(
+            session=session,
+            sprocket_type=schemas.SPRocketTypeCreate(
+                teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
+            ),
+        ).id
+    ]
+    sprocket_production_data = schemas.SPRocketProductionCreate(
+        sprocket_production_actual=10,
+        sprocket_production_goal=15,
+        time=datetime(2024, 5, 30, 12, 0, 0),
+        sprocket_types=sprocket_types,
     )
-    created_factory = services.create_factory(session, factory_data)
+    sprocket_production = services.create_sprocket_production(
+        session=session, sprocket_production=sprocket_production_data
+    )
+    chart_data = schemas.ChartDataCreate(sprocket_productions=[sprocket_production.id])
+    chart_data_obj = services.create_chart_data(session=session, chart_data=chart_data)
+    factory_data = schemas.FactoryCreate(chart_data=chart_data_obj.id)
+    created_factory = services.create_factory(session=session, factory=factory_data)
     factory_id = created_factory.id
 
     response = client.get(url=f"/api/v1/factories/{factory_id}")
@@ -221,9 +240,15 @@ def test_get_sprockets(client: TestClient, session: Session) -> None:
 @pytest.mark.unittest
 def test_create_sprocket_production(client: TestClient, session: Session) -> None:
     sprocket_types_data = [
-        schemas.SPRocketTypeCreate(
-            teeth=5 * i, pitch_diameter=5.0 * i, outside_diameter=6.0 * i, pitch=1.0 * i
-        )
+        services.create_sprocket_type(
+            session=session,
+            sprocket_type=schemas.SPRocketTypeCreate(
+                teeth=5 * i,
+                pitch_diameter=5.0 * i,
+                outside_diameter=6.0 * i,
+                pitch=1.0 * i,
+            ),
+        ).id
         for i in range(1, 4)
     ]
 
@@ -246,30 +271,35 @@ def test_create_sprocket_production(client: TestClient, session: Session) -> Non
     assert data["sprocket_production_goal"] == 15
     assert data["time"] == timestamp
     assert len(data["sprocket_types"]) == len(sprocket_types_data)
-    for i, sprocket_type_data in enumerate(sprocket_types_data):
-        assert data["sprocket_types"][i]["teeth"] == sprocket_type_data.teeth
+    for i, sprocket_type in enumerate(sprocket_types_data):
+        sprocket_type_obj = services.get_sprocket_type(session, sprocket_type)
+        assert data["sprocket_types"][i]["teeth"] == sprocket_type_obj.teeth
         assert (
             data["sprocket_types"][i]["pitch_diameter"]
-            == sprocket_type_data.pitch_diameter
+            == sprocket_type_obj.pitch_diameter
         )
         assert (
             data["sprocket_types"][i]["outside_diameter"]
-            == sprocket_type_data.outside_diameter
+            == sprocket_type_obj.outside_diameter
         )
-        assert data["sprocket_types"][i]["pitch"] == sprocket_type_data.pitch
+        assert data["sprocket_types"][i]["pitch"] == sprocket_type_obj.pitch
 
 
 @pytest.mark.unittest
 def test_get_sprocket_production(client: TestClient, session: Session) -> None:
+    sprocket_types = [
+        services.create_sprocket_type(
+            session=session,
+            sprocket_type=schemas.SPRocketTypeCreate(
+                teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
+            ),
+        ).id
+    ]
     sprocket_production_data = schemas.SPRocketProductionCreate(
         sprocket_production_actual=10,
         sprocket_production_goal=15,
         time=datetime(2024, 5, 30, 12, 0, 0),
-        sprocket_types=[
-            schemas.SPRocketTypeCreate(
-                teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
-            )
-        ],
+        sprocket_types=sprocket_types,
     )
     sprocket_production = services.create_sprocket_production(
         session, sprocket_production_data
@@ -284,25 +314,26 @@ def test_get_sprocket_production(client: TestClient, session: Session) -> None:
 @pytest.mark.unittest
 def test_get_all_sprocket_production(client: TestClient, session: Session) -> None:
     # Create multiple sprocket production instances
+    sprocket_types = [
+        services.create_sprocket_type(
+            session=session,
+            sprocket_type=schemas.SPRocketTypeCreate(
+                teeth=20, pitch_diameter=5.5, outside_diameter=6.0, pitch=2.5
+            ),
+        ).id
+    ]
     sprocket_production_data_list = [
-        schemas.SPRocketProductionCreate(
-            sprocket_production_actual=10 * i,
-            sprocket_production_goal=15 * i,
-            time=datetime(2024, 5, 30, 12, 0, 0),
-            sprocket_types=[
-                schemas.SPRocketTypeCreate(
-                    teeth=5 * i,
-                    pitch_diameter=5.0 * i,
-                    outside_diameter=6.0 * i,
-                    pitch=1.0 * i,
-                )
-            ],
+        services.create_sprocket_production(
+            session=session,
+            sprocket_production=schemas.SPRocketProductionCreate(
+                sprocket_production_actual=10 * i,
+                sprocket_production_goal=15 * i,
+                time=datetime(2024, 5, 30, 12, 0, 0),
+                sprocket_types=sprocket_types,
+            ),
         )
         for i in range(1, 4)
     ]
-
-    for sprocket_production_data in sprocket_production_data_list:
-        services.create_sprocket_production(session, sprocket_production_data)
 
     # Request all sprocket production instances
     response = client.get(url="/api/v1/sprocket_production")
@@ -322,19 +353,17 @@ def test_get_all_sprocket_production(client: TestClient, session: Session) -> No
         )
         assert data[i]["time"] == sprocket_production_data.time.timestamp()
         assert len(data[i]["sprocket_types"]) == 1
-        assert (
-            data[i]["sprocket_types"][0]["teeth"]
-            == sprocket_production_data.sprocket_types[0].teeth
+
+        sprocket_type_obj = services.get_sprocket_type(
+            session, data[i]["sprocket_types"][0]["id"]
         )
+        assert data[i]["sprocket_types"][0]["teeth"] == sprocket_type_obj.teeth
         assert (
             data[i]["sprocket_types"][0]["pitch_diameter"]
-            == sprocket_production_data.sprocket_types[0].pitch_diameter
+            == sprocket_type_obj.pitch_diameter
         )
         assert (
             data[i]["sprocket_types"][0]["outside_diameter"]
-            == sprocket_production_data.sprocket_types[0].outside_diameter
+            == sprocket_type_obj.outside_diameter
         )
-        assert (
-            data[i]["sprocket_types"][0]["pitch"]
-            == sprocket_production_data.sprocket_types[0].pitch
-        )
+        assert data[i]["sprocket_types"][0]["pitch"] == sprocket_type_obj.pitch

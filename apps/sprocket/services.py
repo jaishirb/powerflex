@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Optional, Sequence, Type
 
 from fastapi import HTTPException
 from sqlalchemy import ScalarResult
@@ -22,7 +22,7 @@ def create_sprocket_production(
     session: Session, sprocket_production: schemas.SPRocketProductionCreate
 ) -> models.SPRocketProduction:
     sprocket_types = [
-        create_sprocket_type(session, st) for st in sprocket_production.sprocket_types
+        get_sprocket_type(session, st) for st in sprocket_production.sprocket_types
     ]
     session_sprocket_production = models.SPRocketProduction(
         sprocket_production_actual=sprocket_production.sprocket_production_actual,
@@ -44,7 +44,7 @@ def get_sprocket_production(
 
 def get_all_sprocket_production(
     session: Session, page: int = 1, limit: int = 10
-) -> ScalarResult[models.SPRocketProduction]:
+) -> Sequence[models.SPRocketProduction]:
     offset = (page - 1) * limit
     stmt = (
         select(models.SPRocketProduction)
@@ -53,15 +53,14 @@ def get_all_sprocket_production(
         .offset(offset)
     )
     result = session.exec(stmt)
-    return result
+    return result.all()
 
 
 def create_chart_data(
     session: Session, chart_data: schemas.ChartDataCreate
 ) -> models.ChartData:
     sprocket_productions = [
-        create_sprocket_production(session, sp)
-        for sp in chart_data.sprocket_productions
+        get_sprocket_production(session, sp) for sp in chart_data.sprocket_productions
     ]
     session_chart_data = models.ChartData(sprocket_productions=sprocket_productions)
     session.add(session_chart_data)
@@ -78,7 +77,7 @@ def get_chart_data(session: Session, chart_data_id: int) -> Type[ChartData]:
 
 
 def create_factory(session: Session, factory: schemas.FactoryCreate) -> models.Factory:
-    chart_data = create_chart_data(session, factory.chart_data)
+    chart_data = get_chart_data(session=session, chart_data_id=factory.chart_data)
     session_factory = models.Factory(chart_data_id=chart_data.id)
     session.add(session_factory)
     session.commit()

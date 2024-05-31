@@ -24,10 +24,10 @@ class SPRocketTypeResponse(SPRocketTypeBase):
 class SPRocketProductionBase(BaseModel):
     sprocket_production_actual: int
     sprocket_production_goal: int
-    sprocket_types: List[SPRocketTypeCreate]
 
 
 class SPRocketProductionCreate(SPRocketProductionBase):
+    sprocket_types: List[int]
     time: datetime
 
     @classmethod
@@ -43,6 +43,7 @@ class SPRocketProductionCreate(SPRocketProductionBase):
 
 class SPRocketProductionResponse(SPRocketProductionBase):
     id: int
+    sprocket_types: List[SPRocketTypeResponse]
     time: Annotated[int, Field(validate_default=True)]
 
     @field_validator("time", mode="before")
@@ -58,7 +59,7 @@ class ChartDataBase(BaseModel):
 
 
 class ChartDataCreate(ChartDataBase):
-    sprocket_productions: List[SPRocketProductionCreate]
+    sprocket_productions: List[int]
 
 
 class ChartDataResponse(ChartDataBase):
@@ -73,7 +74,7 @@ class FactoryBase(BaseModel):
 
 
 class FactoryCreate(FactoryBase):
-    chart_data: ChartDataCreate
+    chart_data: int
 
 
 class FactoryResponse(FactoryBase):

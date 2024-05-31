@@ -20,17 +20,23 @@ class BaseSQLModel(SQLModel):
         target.updated_at = datetime.now()
 
 
+class SPRocketTypeSPRocketProductionLink(SQLModel, table=True):
+    sprocket_type_id: Optional[int] = Field(
+        default=None, foreign_key="sprockettype.id", primary_key=True
+    )
+    sprocket_production_id: Optional[int] = Field(
+        default=None, foreign_key="sprocketproduction.id", primary_key=True
+    )
+
+
 class SPRocketType(BaseSQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     teeth: int
     pitch_diameter: float
     outside_diameter: float
     pitch: float
-    production_id: Optional[int] = Field(
-        default=None, foreign_key="sprocketproduction.id"
-    )
-    production: Optional["SPRocketProduction"] = Relationship(
-        back_populates="sprocket_types"
+    productions: list["SPRocketProduction"] = Relationship(
+        back_populates="sprocket_types", link_model=SPRocketTypeSPRocketProductionLink
     )
 
     def __str__(self) -> str:
@@ -42,10 +48,13 @@ class SPRocketProduction(BaseSQLModel, table=True):
     sprocket_production_actual: int
     sprocket_production_goal: int
     time: datetime
-    sprocket_types: List[SPRocketType] = Relationship(back_populates="production")
     chart_data_id: Optional[int] = Field(default=None, foreign_key="chartdata.id")
     chart_data: Optional["ChartData"] = Relationship(
         back_populates="sprocket_productions"
+    )
+    sprocket_types: list["SPRocketType"] = Relationship(
+        back_populates="productions",
+        link_model=SPRocketTypeSPRocketProductionLink,
     )
 
     def __str__(self) -> str:
