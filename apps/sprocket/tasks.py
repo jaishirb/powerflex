@@ -42,6 +42,9 @@ def load_data_from_json(
                 chart_data_info = factory["factory"]["chart_data"]
 
                 sprocket_productions = []
+                chart_data = models.ChartData(sprocket_productions=sprocket_productions)
+                session.add(chart_data)
+                session.flush()
                 for actual, goal, timestamp in zip(
                     chart_data_info["sprocket_production_actual"],
                     chart_data_info["sprocket_production_goal"],
@@ -52,14 +55,11 @@ def load_data_from_json(
                         sprocket_production_goal=goal,
                         time=datetime.fromtimestamp(timestamp),
                         sprocket_types=sprocket_types,
+                        chart_data_id=chart_data.id,
                     )
                     session.add(sprocket_production)
                     session.flush()
                     sprocket_productions.append(sprocket_production)
-
-                chart_data = models.ChartData(sprocket_productions=sprocket_productions)
-                session.add(chart_data)
-                session.flush()
 
                 factory_obj = models.Factory(
                     chart_data_id=chart_data.id, chart_data=chart_data
