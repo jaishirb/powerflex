@@ -16,7 +16,7 @@ factory_data = {
                 "chart_data": {
                     "sprocket_production_actual": [10, 20, 30],
                     "sprocket_production_goal": [15, 25, 35],
-                    "time": [1, 2, 3],
+                    "time": [1611194818, 1622194818, 1633194818],
                 }
             }
         }
@@ -42,38 +42,54 @@ def mock_files(mocker: Any) -> None:
     mocker.patch("builtins.open", mocked_open)
 
 
-# Test function
 @pytest.mark.unittest
 def test_load_data_from_json(
     client: TestClient, session: Session, mock_files: Any
 ) -> None:
-    # Run the data loading function
     load_data_from_json(
         factory_file_path="factory_file.json",
         sprocket_file_path="sprocket_file.json",
         session=session,
     )
 
-    # Check that the data was loaded correctly
     statement = select(models.ChartData)
     chart_data = session.exec(statement).all()
     assert len(chart_data) == 1
-    assert chart_data[0].sprocket_production_actual == [10, 20, 30]
-    assert chart_data[0].sprocket_production_goal == [15, 25, 35]
-    assert chart_data[0].time == [1, 2, 3]
+
+    production_actual_values = [10, 20, 30]
+    production_goal_values = [15, 25, 35]
+    production_time_values = [1611194818, 1622194818, 1633194818]
+    for chart_data_element in chart_data:
+        assert len(chart_data_element.sprocket_productions) == 3
+        for index, sprocket_production in enumerate(
+            chart_data_element.sprocket_productions
+        ):
+            assert (
+                sprocket_production.sprocket_production_actual
+                == production_actual_values[index]
+            )
+            assert (
+                sprocket_production.sprocket_production_goal
+                == production_goal_values[index]
+            )
+            assert (
+                int(sprocket_production.time.timestamp())
+                == production_time_values[index]
+            )
 
     statement = select(models.Factory)
     factories = session.exec(statement).all()
     assert len(factories) == 1
     assert factories[0].chart_data_id == chart_data[0].id
 
-    statement = select(models.SPRocket)
-    sprockets = session.exec(statement).all()
-    assert len(sprockets) == 1
-    assert sprockets[0].teeth == 20
-    assert sprockets[0].pitch_diameter == 5.5
-    assert sprockets[0].outside_diameter == 6.0
-    assert sprockets[0].pitch == 2.5
+    statement = select(models.SPRocketType)
+    sprocket_data_objects = session.exec(statement).all()
+    assert len(sprocket_data_objects) == 1
+
+    assert sprocket_data_objects[0].teeth == 20
+    assert sprocket_data_objects[0].pitch_diameter == 5.5
+    assert sprocket_data_objects[0].outside_diameter == 6.0
+    assert sprocket_data_objects[0].pitch == 2.5
 
     statement = select(models.InitialDataLoad)
     initial_data_load = session.exec(statement).all()

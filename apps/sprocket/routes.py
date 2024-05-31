@@ -5,7 +5,6 @@ from sqlalchemy import ScalarResult
 
 from apps.database import database
 from apps.sprocket import models, schemas, services
-from apps.sprocket.models import SPRocket
 
 router = APIRouter(prefix="/api/v1")
 
@@ -25,7 +24,7 @@ def create_chart_data(
 def get_chart_data(
     chart_data_id: int,
     session: database.SessionDep,
-) -> models.ChartData:
+) -> Type[models.ChartData]:
     chart_data = services.get_chart_data(session, chart_data_id)
     if not chart_data:
         raise HTTPException(status_code=404, detail="ChartData not found")
@@ -49,35 +48,77 @@ def get_factory(factory_id: int, session: database.SessionDep) -> models.Factory
     return factory
 
 
-# SPRocket CRUD
-@router.get(path="/sprockets", response_model=List[schemas.SPRocketResponse])
-def get_sprockets(session: database.SessionDep) -> ScalarResult[SPRocket]:
-    return services.get_sprockets(session)
-
-
-@router.get(path="/sprockets/{sprocket_id}", response_model=schemas.SPRocketResponse)
-def get_sprocket(sprocket_id: int, session: database.SessionDep) -> models.SPRocket:
-    sprocket = services.get_sprocket(session, sprocket_id)
-    if not sprocket_id:
-        raise HTTPException(status_code=404, detail="sprocket not found")
-    return sprocket
-
-
-@router.post(path="/sprockets", response_model=schemas.SPRocketResponse)
-def create_sprocket(
-    sprocket: schemas.SPRocketCreate,
+# SPRocketType CRUD
+@router.get(path="/sprockets", response_model=List[schemas.SPRocketTypeResponse])
+def get_sprockets_types(
     session: database.SessionDep,
-) -> models.SPRocket:
-    return services.create_sprocket(session, sprocket)
+) -> ScalarResult[models.SPRocketType]:
+    return services.get_sprocket_types(session)
 
 
-@router.put(path="/sprockets/{sprocket_id}", response_model=schemas.SPRocketResponse)
-def update_sprocket(
-    sprocket_id: int,
-    sprocket: schemas.SPRocketUpdate,
-    session: database.SessionDep,
-) -> Type[SPRocket]:
-    sprocket = services.update_sprocket(session, sprocket_id, sprocket)
+@router.get(
+    path="/sprockets/{sprocket_id}", response_model=schemas.SPRocketTypeResponse
+)
+def get_sprocket(sprocket_id: int, session: database.SessionDep) -> models.SPRocketType:
+    sprocket = services.get_sprocket_type(session, sprocket_id)
     if not sprocket:
         raise HTTPException(status_code=404, detail="Sprocket not found")
     return sprocket
+
+
+@router.post(path="/sprockets", response_model=schemas.SPRocketTypeResponse)
+def create_sprocket(
+    sprocket: schemas.SPRocketTypeCreate,
+    session: database.SessionDep,
+) -> models.SPRocketType:
+    return services.create_sprocket_type(session, sprocket)
+
+
+@router.put(
+    path="/sprockets/{sprocket_id}", response_model=schemas.SPRocketTypeResponse
+)
+def update_sprocket(
+    sprocket_id: int,
+    sprocket: schemas.SPRocketTypeCreate,
+    session: database.SessionDep,
+) -> Type[models.SPRocketType]:
+    updated_sprocket = services.update_sprocket_type(session, sprocket_id, sprocket)
+    if not updated_sprocket:
+        raise HTTPException(status_code=404, detail="Sprocket not found")
+    return updated_sprocket
+
+
+@router.post(
+    path="/sprocket_production/", response_model=schemas.SPRocketProductionResponse
+)
+def create_sprocket_production(
+    sprocket_production: schemas.SPRocketProductionCreate,
+    session: database.SessionDep,
+) -> models.SPRocketProduction:
+    return services.create_sprocket_production(session, sprocket_production)
+
+
+@router.get(
+    path="/sprocket_production/{sprocket_production_id}",
+    response_model=schemas.SPRocketProductionResponse,
+)
+def read_sprocket_production(
+    sprocket_production_id: int,
+    session: database.SessionDep,
+) -> Type[models.SPRocketProduction]:
+    sprocket_production = services.get_sprocket_production(
+        session, sprocket_production_id
+    )
+    if sprocket_production is None:
+        raise HTTPException(status_code=404, detail="Sprocket production not found")
+    return sprocket_production
+
+
+@router.get(
+    path="/sprocket_production/",
+    response_model=List[schemas.SPRocketProductionResponse],
+)
+def read_all_sprocket_production(
+    session: database.SessionDep,
+) -> ScalarResult[models.SPRocketProduction]:
+    return services.get_all_sprocket_production(session)

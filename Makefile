@@ -19,6 +19,9 @@ load:
 run-tests:
 	docker compose -f .devcontainer/docker-compose.yml exec api pytest
 
+coverage:
+	docker exec -it api pytest --cov=apps tests/
+
 
 init: init-aerich upgrade
 restart: down up

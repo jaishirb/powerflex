@@ -6,9 +6,7 @@ pydantic
 pytz
 redis
 celery
-Babel
 jsonpickle
-rq
 pytest-dotenv
 httpx
 fastapi-pagination

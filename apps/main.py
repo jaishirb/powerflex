@@ -4,6 +4,7 @@ from typing import Any, AsyncGenerator, Dict
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi_pagination import add_pagination
 from sqlalchemy.orm import Session
 
 from apps.sprocket.routes import router as sprocket_router
@@ -34,6 +35,7 @@ app = FastAPI(
 
 
 app.include_router(router=sprocket_router)
+add_pagination(app)
 
 
 @app.middleware("http")

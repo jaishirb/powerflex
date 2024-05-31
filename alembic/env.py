@@ -19,7 +19,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from apps.sprocket.models import metadata  # noqa
-from apps.sprocket.models import Factory, ChartData, InitialDataLoad, SPRocket # noqa: 'autogenerate' support
+from apps.sprocket.models import Factory, ChartData, InitialDataLoad, SPRocketType, SPRocketProduction # noqa: 'autogenerate' support
 
 target_metadata = metadata
 
