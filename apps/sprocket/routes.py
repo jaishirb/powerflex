@@ -23,7 +23,7 @@ def create_chart_data(
     path="/chart_data/{chart_data_id}", response_model=schemas.ChartDataResponse
 )
 @cache(expire=60)
-def get_chart_data(
+def read_chart_data(
     chart_data_id: int,
     session: database.SessionDep,
 ) -> Type[models.ChartData]:
@@ -44,7 +44,7 @@ def create_factory(
 
 @router.get(path="/factories/{factory_id}", response_model=schemas.FactoryResponse)
 @cache(expire=60)
-def get_factory(factory_id: int, session: database.SessionDep) -> models.Factory:
+def read_factory(factory_id: int, session: database.SessionDep) -> models.Factory:
     factory = services.get_factory(session=session, factory_id=factory_id)
     if not factory:
         raise HTTPException(status_code=404, detail="Factory not found")
@@ -54,7 +54,7 @@ def get_factory(factory_id: int, session: database.SessionDep) -> models.Factory
 # SPRocketType CRUD
 @router.get(path="/sprockets", response_model=List[schemas.SPRocketTypeResponse])
 @cache(expire=60)
-def get_sprockets_types(
+def list_sprocket_type(
     session: database.SessionDep,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
@@ -66,7 +66,7 @@ def get_sprockets_types(
     path="/sprockets/{sprocket_id}", response_model=schemas.SPRocketTypeResponse
 )
 @cache(expire=60)
-def get_sprocket(sprocket_id: int, session: database.SessionDep) -> models.SPRocketType:
+def get_sprocket_type(sprocket_id: int, session: database.SessionDep) -> models.SPRocketType:
     sprocket = services.get_sprocket_type(session=session, sprocket_type_id=sprocket_id)
     if not sprocket:
         raise HTTPException(status_code=404, detail="Sprocket not found")
@@ -74,7 +74,7 @@ def get_sprocket(sprocket_id: int, session: database.SessionDep) -> models.SPRoc
 
 
 @router.post(path="/sprockets", response_model=schemas.SPRocketTypeResponse)
-def create_sprocket(
+def create_sprocket_type(
     sprocket: schemas.SPRocketTypeCreate,
     session: database.SessionDep,
 ) -> models.SPRocketType:
@@ -84,7 +84,7 @@ def create_sprocket(
 @router.put(
     path="/sprockets/{sprocket_id}", response_model=schemas.SPRocketTypeResponse
 )
-def update_sprocket(
+def update_sprocket_type(
     sprocket_id: int,
     sprocket: schemas.SPRocketTypeCreate,
     session: database.SessionDep,
@@ -131,7 +131,7 @@ def read_sprocket_production(
     response_model=List[schemas.SPRocketProductionResponse],
 )
 @cache(expire=60)
-def read_all_sprocket_production(
+def list_sprocket_production(
     session: database.SessionDep,
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1, le=100),
